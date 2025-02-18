@@ -66,11 +66,6 @@ export function convertToStandardForm(problem: LinearProblem): StandardForm {
     }
   });
 
-  // Add slack variables to convert inequalities to equalities
-  for (const constraint of newConstraints) {
-    constraint.coefficients.push(1); // Add slack variable
-  }
-
   return {
     problemType: "maximize",
     objective: newObjective,
