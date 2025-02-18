@@ -1,18 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import ConstraintInput from "./ConstraintInput";
+import ObjectiveInput from "./ObjectiveInput";
+import ProblemPreview from "./ProblemPreview";
+import ProblemTypeSelector from "./ProblemTypeSelector";
 
 interface Constraint {
   x: string[];
@@ -40,36 +32,6 @@ export default function Component() {
 
   const removeConstraint = (index: number) => {
     setConstraints(constraints.filter((_, i) => i !== index));
-  };
-
-  const addObjectiveTerm = () => {
-    setObjective([...objective, ""]);
-    setConstraints(
-      constraints.map((constraint) => ({
-        ...constraint,
-        x: [...constraint.x, ""],
-      }))
-    );
-  };
-
-  const removeObjectiveTerm = (index: number) => {
-    if (objective.length <= 1) return;
-    const newObjective = [...objective];
-    newObjective.splice(index, 1);
-    setObjective(newObjective);
-
-    const newConstraints = constraints.map((constraint) => {
-      const newX = [...constraint.x];
-      newX.splice(index, 1);
-      return { ...constraint, x: newX };
-    });
-    setConstraints(newConstraints);
-  };
-
-  const updateObjectiveTerm = (index: number, value: string) => {
-    const newObjective = [...objective];
-    newObjective[index] = value;
-    setObjective(newObjective);
   };
 
   const updateConstraintTerm = (
@@ -107,20 +69,12 @@ export default function Component() {
   };
 
   const solveProblem = () => {
-    // Basic solve logic (replace with actual simplex algorithm)
-    if (objective.length !== 2 || constraints.length !== 2) {
-      alert("This is a placeholder solve function. Please use a 2x2 problem.");
-      return;
-    }
-
     const a11 = Number.parseFloat(constraints[0].x[0]);
     const a12 = Number.parseFloat(constraints[0].x[1]);
     const a21 = Number.parseFloat(constraints[1].x[0]);
     const a22 = Number.parseFloat(constraints[1].x[1]);
     const b1 = Number.parseFloat(constraints[0].value);
     const b2 = Number.parseFloat(constraints[1].value);
-    const c1 = Number.parseFloat(objective[0]);
-    const c2 = Number.parseFloat(objective[1]);
 
     // Solving a simple system of equations for intersection point
     const determinant = a11 * a22 - a12 * a21;
@@ -146,60 +100,24 @@ export default function Component() {
       </div>
 
       <div className="space-y-6">
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Problem Type</h2>
-          <RadioGroup
-            defaultValue={problemType}
-            onValueChange={(value) =>
-              setProblemType(value as "maximize" | "minimize")
-            }
-            className="flex gap-4"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="maximize" id="maximize" />
-              <Label htmlFor="maximize">Maximize</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="minimize" id="minimize" />
-              <Label htmlFor="minimize">Minimize</Label>
-            </div>
-          </RadioGroup>
-        </div>
+        <ProblemTypeSelector
+          problemType={problemType}
+          setProblemType={setProblemType}
+        />
 
-        <div>
-          <h2 className="text-lg font-semibold mb-2">
-            Objective Function Coefficients
-          </h2>
-          <div className="flex gap-4 items-center">
-            {objective.map((term, index) => (
-              <div key={index} className="flex gap-2 items-center">
-                <Input
-                  type="number"
-                  value={term}
-                  onChange={(e) => updateObjectiveTerm(index, e.target.value)}
-                  className="w-20"
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeObjectiveTerm(index)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-            <Button variant="default" onClick={addObjectiveTerm}>
-              Add Term
-            </Button>
-          </div>
-        </div>
+        <ObjectiveInput
+          objective={objective}
+          setObjective={setObjective}
+          constraints={constraints}
+          setConstraints={setConstraints}
+        />
 
         <div>
           <h2 className="text-lg font-semibold mb-2">Constraints</h2>
           <div className="space-y-4">
             {constraints.map((constraint, index) => (
               <ConstraintInput
-                key={index}
+                key={index as number}
                 constraint={constraint}
                 objectiveLength={objective.length}
                 onConstraintChange={(termIndex, value) =>
@@ -218,32 +136,11 @@ export default function Component() {
           </div>
         </div>
 
-        <div className="bg-muted/50 p-6 rounded-lg">
-          <h2 className="text-lg font-semibold mb-4">Problem Preview:</h2>
-          <div className="space-y-4">
-            <div>
-              <div className="font-serif mb-2">
-                {problemType.charAt(0).toUpperCase() + problemType.slice(1)}:
-              </div>
-              <div className="font-serif ml-8">
-                Z = {objective.map((term, i) => `${term}x${i + 1}`).join(" + ")}
-              </div>
-            </div>
-            <div>
-              <div className="font-serif mb-2">Subject to:</div>
-              <div className="font-serif ml-8 space-y-2">
-                {constraints.map((constraint, index) => (
-                  <div key={index as number}>
-                    {constraint.x
-                      .map((xValue, i) => `${xValue}x${i + 1}`)
-                      .join(" + ")}{" "}
-                    {constraint.operator} {constraint.value}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        <ProblemPreview
+          problemType={problemType}
+          objective={objective}
+          constraints={constraints}
+        />
 
         <Button onClick={solveProblem}>Solve</Button>
       </div>
