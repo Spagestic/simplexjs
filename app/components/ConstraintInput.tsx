@@ -35,6 +35,7 @@ const ConstraintInput: React.FC<ConstraintInputProps> = ({
           value={xValue}
           onChange={(e) => onConstraintChange(index, e.target.value)}
           className="w-20"
+          placeholder={`x${index + 1}`}
         />
       ))}
       <Select

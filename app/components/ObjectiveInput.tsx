@@ -69,6 +69,7 @@ const ObjectiveInput: React.FC<ObjectiveInputProps> = ({
               value={term}
               onChange={(e) => updateObjectiveTerm(index, e.target.value)}
               className="w-20"
+              placeholder={`x${index + 1}`}
             />
             <Button
               variant="ghost"
