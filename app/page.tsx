@@ -1,10 +1,11 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import ConstraintInput from "./ConstraintInput";
-import ObjectiveInput from "./ObjectiveInput";
-import ProblemPreview from "./ProblemPreview";
-import ProblemTypeSelector from "./ProblemTypeSelector";
+import ConstraintInput from "./components/ConstraintInput";
+import ObjectiveInput from "./components/ObjectiveInput";
+import ProblemPreview from "./components/ProblemPreview";
+import ProblemTypeSelector from "./components/ProblemTypeSelector";
+import StandardFormDisplay from "./components/StandardFormDisplay";
 
 interface Constraint {
   x: string[];
@@ -140,6 +141,18 @@ export default function Component() {
           problemType={problemType}
           objective={objective}
           constraints={constraints}
+        />
+
+        <StandardFormDisplay
+          linearProblem={{
+            problemType,
+            objective: objective.map(Number),
+            constraints: constraints.map((c) => ({
+              coefficients: c.x.map(Number),
+              operator: c.operator,
+              value: Number(c.value),
+            })),
+          }}
         />
 
         <Button onClick={solveProblem}>Solve</Button>
