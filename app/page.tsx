@@ -137,23 +137,25 @@ export default function Component() {
           </div>
         </div>
 
-        <ProblemPreview
-          problemType={problemType}
-          objective={objective}
-          constraints={constraints}
-        />
+        <div className="w-full flex space-x-4">
+          <ProblemPreview
+            problemType={problemType}
+            objective={objective}
+            constraints={constraints}
+          />
 
-        <StandardFormDisplay
-          linearProblem={{
-            problemType,
-            objective: objective.map(Number),
-            constraints: constraints.map((c) => ({
-              coefficients: c.x.map(Number),
-              operator: c.operator,
-              value: Number(c.value),
-            })),
-          }}
-        />
+          <StandardFormDisplay
+            linearProblem={{
+              problemType,
+              objective: objective.map(Number),
+              constraints: constraints.map((c) => ({
+                coefficients: c.x.map(Number),
+                operator: c.operator,
+                value: Number(c.value),
+              })),
+            }}
+          />
+        </div>
 
         <Button onClick={solveProblem}>Solve</Button>
       </div>
