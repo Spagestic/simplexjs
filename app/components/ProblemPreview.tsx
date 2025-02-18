@@ -25,7 +25,7 @@ const ProblemPreview: React.FC<ProblemPreviewProps> = ({
             Z ={" "}
             {objective.map((term, i) => (
               <React.Fragment key={i as number}>
-                {term}x<sub>{i + 1}</sub>
+                {Number(term) || 0}x<sub>{i + 1}</sub>
                 {i < objective.length - 1 ? " + " : ""}
               </React.Fragment>
             ))}
@@ -38,11 +38,11 @@ const ProblemPreview: React.FC<ProblemPreviewProps> = ({
               <div key={index as number}>
                 {constraint.x.map((xValue, i) => (
                   <React.Fragment key={i as number}>
-                    {xValue}x<sub>{i + 1}</sub>
+                    {Number(xValue) || 0}x<sub>{i + 1}</sub>
                     {i < constraint.x.length - 1 ? " + " : ""}
                   </React.Fragment>
                 ))}{" "}
-                {constraint.operator} {constraint.value}
+                {constraint.operator} {Number(constraint.value) || 0}
               </div>
             ))}
           </div>

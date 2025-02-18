@@ -38,7 +38,7 @@ const StandardFormDisplay: React.FC<StandardFormDisplayProps> = ({
             Z ={" "}
             {standardForm.objective.map((term, i) => (
               <React.Fragment key={i as number}>
-                {term}x<sub>{i + 1}</sub>
+                {Number(term) || 0}x<sub>{i + 1}</sub>
                 {i < standardForm.objective.length - 1 ? " + " : ""}
               </React.Fragment>
             ))}
@@ -51,7 +51,7 @@ const StandardFormDisplay: React.FC<StandardFormDisplayProps> = ({
               <div key={index as number}>
                 {constraint.coefficients.map((xValue, i) => (
                   <React.Fragment key={i as number}>
-                    {xValue}x<sub>{i + 1}</sub>
+                    {Number(xValue) || 0}x<sub>{i + 1}</sub>
                     {i < constraint.coefficients.length - 1 ? " + " : ""}
                   </React.Fragment>
                 ))}{" "}
