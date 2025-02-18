@@ -8,9 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { Constraint } from "@/types/Constraint";
 
 interface ConstraintInputProps {
-  constraint: { x: string[]; operator: "<=" | ">=" | "="; value: string };
+  constraint: Constraint;
   objectiveLength: number;
   onConstraintChange: (termIndex: number, value: string) => void;
   onOperatorChange: (value: "<=" | ">=" | "=") => void;

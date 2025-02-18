@@ -1,21 +1,7 @@
+import type { LinearProblem } from "@/types/LinearProblem";
+import type { StandardForm } from "@/types/StandardForm";
+
 // @/lib/LinearProblemStandardFormConverter
-
-interface LinearProblem {
-  problemType: "maximize" | "minimize";
-  objective: number[];
-  constraints: {
-    coefficients: number[];
-    operator: "<=" | ">=" | "=";
-    value: number;
-  }[];
-  signConstraints: string[];
-}
-
-interface StandardForm {
-  problemType: "maximize";
-  objective: number[];
-  constraints: { coefficients: number[]; operator: "<="; value: number }[];
-}
 
 export function convertToStandardForm(problem: LinearProblem): StandardForm {
   let objective = [...problem.objective];

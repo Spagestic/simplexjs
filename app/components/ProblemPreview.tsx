@@ -1,9 +1,10 @@
 import React from "react";
+import type { Constraint } from "@/types/Constraint";
 
 interface ProblemPreviewProps {
   problemType: "maximize" | "minimize";
   objective: string[];
-  constraints: { x: string[]; operator: "<=" | ">=" | "="; value: string }[];
+  constraints: Constraint[];
   signConstraints: string[];
 }
 

@@ -1,17 +1,7 @@
 // @/app/components/StandardFormDisplay
 import React from "react";
 import { convertToStandardForm } from "@/lib/LinearProblemStandardFormConverter";
-
-interface LinearProblem {
-  problemType: "maximize" | "minimize";
-  objective: number[];
-  constraints: {
-    coefficients: number[];
-    operator: "<=" | ">=" | "=";
-    value: number;
-  }[];
-  signConstraints: string[];
-}
+import type { LinearProblem } from "@/types/LinearProblem";
 
 interface StandardFormDisplayProps {
   linearProblem: LinearProblem;

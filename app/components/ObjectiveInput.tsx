@@ -1,12 +1,7 @@
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-interface Constraint {
-  x: string[];
-  operator: "<=" | ">=" | "=";
-  value: string;
-}
+import type { Constraint } from "@/types/Constraint";
 
 interface ObjectiveInputProps {
   objective: string[];

@@ -7,12 +7,7 @@ import ProblemPreview from "./components/ProblemPreview";
 import ProblemTypeSelector from "./components/ProblemTypeSelector";
 import StandardFormDisplay from "./components/StandardFormDisplay";
 import SignConstraintInput from "./components/SignConstraintInput";
-
-interface Constraint {
-  x: string[];
-  operator: "<=" | ">=" | "=";
-  value: string;
-}
+import type { Constraint } from "@/types/Constraint";
 
 export default function Component() {
   const [problemType, setProblemType] = useState<"maximize" | "minimize">(
