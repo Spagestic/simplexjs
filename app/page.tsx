@@ -31,7 +31,7 @@ export default function Component() {
   const addConstraint = () => {
     setConstraints([
       ...constraints,
-      { x: Array(objective.length).fill(""), operator: "<=", value: "" },
+      { x: Array(objective.length).fill("0"), operator: "<=", value: "0" },
     ]);
   };
 

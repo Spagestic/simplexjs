@@ -26,11 +26,11 @@ const ObjectiveInput: React.FC<ObjectiveInputProps> = ({
   setSignConstraints,
 }) => {
   const addObjectiveTerm = () => {
-    setObjective([...objective, ""]);
+    setObjective([...objective, "0"]);
     setConstraints(
       constraints.map((constraint) => ({
         ...constraint,
-        x: [...constraint.x, ""],
+        x: [...constraint.x, "0"],
       }))
     );
     setSignConstraints([...signConstraints, ">="]);
