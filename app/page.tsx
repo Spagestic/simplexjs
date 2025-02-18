@@ -6,6 +6,7 @@ import ObjectiveInput from "./components/ObjectiveInput";
 import ProblemPreview from "./components/ProblemPreview";
 import ProblemTypeSelector from "./components/ProblemTypeSelector";
 import StandardFormDisplay from "./components/StandardFormDisplay";
+import SignConstraintInput from "./components/SignConstraintInput";
 
 interface Constraint {
   x: string[];
@@ -23,6 +24,9 @@ export default function Component() {
     { x: ["1", "3"], operator: "<=", value: "10" },
   ]);
   const [solution, setSolution] = useState<number[] | null>(null);
+  const [signConstraints, setSignConstraints] = useState<string[]>(
+    Array(objective.length).fill(">=")
+  );
 
   const addConstraint = () => {
     setConstraints([
@@ -91,6 +95,12 @@ export default function Component() {
     setSolution([x1, x2]);
   };
 
+  const updateSignConstraint = (index: number, value: string) => {
+    setSignConstraints(
+      signConstraints.map((sign, i) => (i === index ? value : sign))
+    );
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div>
@@ -111,6 +121,8 @@ export default function Component() {
           setObjective={setObjective}
           constraints={constraints}
           setConstraints={setConstraints}
+          signConstraints={signConstraints}
+          setSignConstraints={setSignConstraints}
         />
 
         <div>
@@ -137,11 +149,26 @@ export default function Component() {
           </div>
         </div>
 
+        <div>
+          <h2 className="text-lg font-semibold mb-2">Sign Constraints</h2>
+          <div className="flex gap-4">
+            {objective.map((_, index) => (
+              <SignConstraintInput
+                key={index as number}
+                variableIndex={index}
+                sign={signConstraints[index]}
+                onSignChange={updateSignConstraint}
+              />
+            ))}
+          </div>
+        </div>
+
         <div className="w-full flex space-x-4">
           <ProblemPreview
             problemType={problemType}
             objective={objective}
             constraints={constraints}
+            signConstraints={signConstraints}
           />
 
           <StandardFormDisplay
@@ -153,7 +180,9 @@ export default function Component() {
                 operator: c.operator,
                 value: Number(c.value),
               })),
+              signConstraints: signConstraints,
             }}
+            signConstraints={signConstraints}
           />
         </div>
 

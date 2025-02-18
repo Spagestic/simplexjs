@@ -1,5 +1,6 @@
+// @/app/components/StandardFormDisplay
 import React from "react";
-import { convertToStandardForm } from "../../LinearProblemStandardFormConverter";
+import { convertToStandardForm } from "@/lib/LinearProblemStandardFormConverter";
 
 interface LinearProblem {
   problemType: "maximize" | "minimize";
@@ -9,14 +10,17 @@ interface LinearProblem {
     operator: "<=" | ">=" | "=";
     value: number;
   }[];
+  signConstraints: string[];
 }
 
 interface StandardFormDisplayProps {
   linearProblem: LinearProblem;
+  signConstraints: string[];
 }
 
 const StandardFormDisplay: React.FC<StandardFormDisplayProps> = ({
   linearProblem,
+  signConstraints,
 }) => {
   const standardForm = convertToStandardForm(linearProblem);
 
@@ -54,6 +58,28 @@ const StandardFormDisplay: React.FC<StandardFormDisplayProps> = ({
                 {constraint.operator} {constraint.value}
               </div>
             ))}
+          </div>
+        </div>
+        <div>
+          <div className="font-serif mb-2">Sign Constraints:</div>
+          <div className="font-serif ml-8">
+            {standardForm.objective.map((_, index) => {
+              const sign = signConstraints[index];
+              if (sign === "free") {
+                return (
+                  <React.Fragment key={index as number}>
+                    y<sub>{index + 1}</sub>, z<sub>{index + 1}</sub> &gt;= 0
+                    {index < standardForm.objective.length - 1 ? ", " : ""}
+                  </React.Fragment>
+                );
+              }
+              return (
+                <React.Fragment key={index as number}>
+                  x<sub>{index + 1}</sub> {signConstraints[index]} 0
+                  {index < standardForm.objective.length - 1 ? ", " : ""}
+                </React.Fragment>
+              );
+            })}
           </div>
         </div>
       </div>

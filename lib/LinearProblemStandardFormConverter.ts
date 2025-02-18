@@ -1,3 +1,5 @@
+// @/lib/LinearProblemStandardFormConverter
+
 interface LinearProblem {
   problemType: "maximize" | "minimize";
   objective: number[];
@@ -6,6 +8,7 @@ interface LinearProblem {
     operator: "<=" | ">=" | "=";
     value: number;
   }[];
+  signConstraints: string[];
 }
 
 interface StandardForm {
@@ -48,10 +51,44 @@ export function convertToStandardForm(problem: LinearProblem): StandardForm {
     return constraint;
   }) as { coefficients: number[]; operator: "<="; value: number }[];
 
+  // Handle sign constraints
+  const newObjective = [...objective];
+  const newConstraints: {
+    coefficients: number[];
+    operator: "<=" | ">=" | "=";
+    value: number;
+  }[] = constraints.map((constraint) => ({
+    ...constraint,
+    coefficients: [...constraint.coefficients],
+  }));
+
+  problem.signConstraints.forEach((sign, index) => {
+    if (sign === "free") {
+      // For free variables, replace x_i with y_i - z_i
+      newObjective.push(-objective[index]); // Add coefficient for z_i
+
+      for (const constraint of newConstraints) {
+        constraint.coefficients.push(-constraint.coefficients[index]); // Add coefficient for z_i
+      }
+      objective[index] = 0;
+    } else if (sign === "<=") {
+      // If x_i <= 0, substitute x_i = -x'_i where x'_i >= 0
+      newObjective[index] = -newObjective[index];
+      for (const constraint of newConstraints) {
+        constraint.coefficients[index] = -constraint.coefficients[index];
+      }
+    }
+  });
+
+  // Add slack variables to convert inequalities to equalities
+  for (const constraint of newConstraints) {
+    constraint.coefficients.push(1); // Add slack variable
+  }
+
   return {
     problemType: "maximize",
-    objective: objective,
-    constraints: constraints as {
+    objective: newObjective,
+    constraints: newConstraints.filter((c) => c.operator === "<=") as {
       coefficients: number[];
       operator: "<=";
       value: number;

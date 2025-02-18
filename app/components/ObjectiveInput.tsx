@@ -13,6 +13,8 @@ interface ObjectiveInputProps {
   setObjective: (objective: string[]) => void;
   constraints: Constraint[];
   setConstraints: (constraints: Constraint[]) => void;
+  signConstraints: string[];
+  setSignConstraints: (signConstraints: string[]) => void;
 }
 
 const ObjectiveInput: React.FC<ObjectiveInputProps> = ({
@@ -20,6 +22,8 @@ const ObjectiveInput: React.FC<ObjectiveInputProps> = ({
   setObjective,
   constraints,
   setConstraints,
+  signConstraints,
+  setSignConstraints,
 }) => {
   const addObjectiveTerm = () => {
     setObjective([...objective, ""]);
@@ -29,6 +33,7 @@ const ObjectiveInput: React.FC<ObjectiveInputProps> = ({
         x: [...constraint.x, ""],
       }))
     );
+    setSignConstraints([...signConstraints, ">="]);
   };
 
   const removeObjectiveTerm = (index: number) => {
