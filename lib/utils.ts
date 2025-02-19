@@ -14,11 +14,11 @@ export const constraintsToEquations = (constraints: any) => {
     let equation = "";
 
     if (x2Coefficient === "0") {
-      equation = `x = ${value} / ${x1Coefficient}`;
-    } else {
-      equation = `y ${
+      equation = `x ${
         operator === "<=" ? "<=" : ">="
-      } (${value} - ${x1Coefficient}x) / ${x2Coefficient}`;
+      } ${value} / ${x1Coefficient}`;
+    } else {
+      equation = `${x1Coefficient}x + ${x2Coefficient}y ${operator} ${value}`;
     }
 
     return equation;
