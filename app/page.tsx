@@ -226,7 +226,10 @@ export default function Component() {
           </div>
         )}
       </div>
-      <DesmosGraph equations={constraintsToEquations(constraints)} />
+      {/* Conditionally render DesmosGraph if there are 2 or fewer variables */}
+      {objective.length <= 2 && (
+        <DesmosGraph equations={constraintsToEquations(constraints)} />
+      )}
     </div>
   );
 }
