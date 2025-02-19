@@ -20,7 +20,7 @@ const AugmentedFormDisplay: React.FC<AugmentedFormDisplayProps> = ({
   }
 
   // Add slack variables and convert inequalities to equalities
-  const augmentedConstraints = constraints.map((constraint, index) => {
+  const augmentedConstraints = constraints.map((constraint) => {
     // const slackVariable = `s${index + 1}`;
     const newCoefficients = [...constraint.coefficients];
 
