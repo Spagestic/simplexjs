@@ -9,6 +9,7 @@ import ProblemTypeSelector from "./components/ProblemTypeSelector";
 import SignConstraintInput from "./components/SignConstraintInput";
 import type { Constraint } from "@/types/Constraint";
 import AugmentedFormDisplay from "./components/AugmentedFormDisplay";
+import TabularFormDisplay from "./components/TabularFormDisplay";
 
 export default function Component() {
   const [problemType, setProblemType] = useState<"maximize" | "minimize">(
@@ -195,6 +196,20 @@ export default function Component() {
             signConstraints={signConstraints}
           />
         </div>
+
+        <TabularFormDisplay
+          linearProblem={{
+            problemType,
+            objective: objective.map(Number),
+            constraints: constraints.map((c) => ({
+              coefficients: c.x.map(Number),
+              operator: c.operator,
+              value: Number(c.value),
+            })),
+            signConstraints: signConstraints,
+          }}
+          // signConstraints={signConstraints}
+        />
 
         <Button onClick={solveProblem}>Solve</Button>
       </div>
