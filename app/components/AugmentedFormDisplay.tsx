@@ -32,14 +32,16 @@ const AugmentedFormDisplay: React.FC<AugmentedFormDisplayProps> = ({
     }
 
     return {
-      coefficients: newCoefficients,    
+      coefficients: newCoefficients,
       operator: "=",
       value: constraint.value,
     };
   });
 
   const numOriginalVariables = objective.length;
-  // const numSlackVariables = constraints.length;
+  const numSlackVariables = constraints.filter(
+    (c) => c.operator !== "="
+  ).length;
 
   return (
     <div className="bg-muted/50 p-6 rounded-lg">
@@ -53,8 +55,8 @@ const AugmentedFormDisplay: React.FC<AugmentedFormDisplayProps> = ({
             Z ={" "}
             {objective.map((term, i) => (
               <React.Fragment key={i as number}>
+                {term >= 0 && i > 0 ? " + " : ""}
                 {Number(term) || 0}x<sub>{i + 1}</sub>
-                {i < objective.length - 1 ? " + " : ""}
               </React.Fragment>
             ))}
           </div>
@@ -68,16 +70,16 @@ const AugmentedFormDisplay: React.FC<AugmentedFormDisplayProps> = ({
                   if (i < numOriginalVariables) {
                     return (
                       <React.Fragment key={i as number}>
+                        {xValue >= 0 && i > 0 ? " + " : ""}
                         {Number(xValue) || 0}x<sub>{i + 1}</sub>
-                        {i < constraint.coefficients.length - 1 ? " + " : ""}
                       </React.Fragment>
                     );
                   }
                   const slackIndex = i - numOriginalVariables + 1;
                   return (
                     <React.Fragment key={i as number}>
+                      {xValue >= 0 && i > 0 ? " + " : ""}
                       {Number(xValue) || 0}s<sub>{slackIndex}</sub>
-                      {i < constraint.coefficients.length - 1 ? " + " : ""}
                     </React.Fragment>
                   );
                 })}{" "}
@@ -95,10 +97,10 @@ const AugmentedFormDisplay: React.FC<AugmentedFormDisplayProps> = ({
                 {index < objective.length - 1 ? ", " : ""}
               </React.Fragment>
             ))}
-            {augmentedConstraints.map((_, index) => (
+            {[...Array(numSlackVariables)].map((_, index) => (
               <React.Fragment key={index as number}>
                 , s<sub>{index + 1}</sub> &gt;= 0
-                {index < augmentedConstraints.length - 1 ? ", " : ""}
+                {index < numSlackVariables - 1 ? ", " : ""}
               </React.Fragment>
             ))}
           </div>
