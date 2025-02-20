@@ -16,7 +16,7 @@ const findPivotColumn = (objectiveRow: number[]): number => {
 
 // Helper function to find the pivot row
 const findPivotRow = (tableau: number[][], pivotColIndex: number): number => {
-  let minRatio = Infinity;
+  let minRatio = Number.POSITIVE_INFINITY;
   let minRatioIndex = -1;
 
   for (let i = 1; i < tableau.length; i++) {
@@ -137,7 +137,7 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
   return (
     <div className="bg-muted/50 p-6 rounded-lg overflow-x-auto">
       {iterations.map((tableau, iterationIndex) => (
-        <div key={iterationIndex} className="mb-8">
+        <div key={iterationIndex as number} className="mb-8">
           <h2 className="text-lg font-semibold mb-4">
             Iteration {iterationIndex + 1}
           </h2>
@@ -146,12 +146,12 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
               <tr>
                 <th className="px-4 py-2">Basis</th>
                 {adjustedObjective.map((_, index) => (
-                  <th key={`x${index}`} className="px-4 py-2">
+                  <th key={`x${index as number}`} className="px-4 py-2">
                     x{index + 1}
                   </th>
                 ))}
                 {Array.from({ length: numSlackVariables }).map((_, index) => (
-                  <th key={`s${index}`} className="px-4 py-2">
+                  <th key={`s${index as number}`} className="px-4 py-2">
                     s{index + 1}
                   </th>
                 ))}
@@ -160,13 +160,13 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
             </thead>
             <tbody>
               {tableau.map((row, rowIndex) => (
-                <tr key={`row${rowIndex}`}>
+                <tr key={`row${rowIndex as number}`}>
                   <td className="border px-4 py-2">
                     {rowIndex === 0 ? "Z" : `x${rowIndex}`}
                   </td>
                   {row.map((cell, colIndex) => (
                     <td
-                      key={`cell${rowIndex}-${colIndex}`}
+                      key={`cell${rowIndex}-${colIndex as number}`}
                       className="border px-4 py-2"
                     >
                       {cell.toFixed(2)}
