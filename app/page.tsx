@@ -10,8 +10,8 @@ import SignConstraintInput from "./components/SignConstraintInput";
 import type { Constraint } from "@/types/Constraint";
 import AugmentedFormDisplay from "./components/AugmentedFormDisplay";
 import TabularFormDisplay from "./components/TabularFormDisplay";
-import DesmosGraph from "./components/DesmosGraph";
-import { constraintsToEquations } from "@/lib/utils";
+// import DesmosGraph from "./components/DesmosGraph";
+// import { constraintsToEquations } from "@/lib/utils";
 
 export default function Component() {
   const [problemType, setProblemType] = useState<"maximize" | "minimize">(
@@ -227,9 +227,9 @@ export default function Component() {
         )}
       </div>
       {/* Conditionally render DesmosGraph if there are 2 or fewer variables */}
-      {objective.length <= 2 && (
+      {/* {objective.length <= 2 && (
         <DesmosGraph equations={constraintsToEquations(constraints)} />
-      )}
+      )} */}
     </div>
   );
 }
