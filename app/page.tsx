@@ -22,7 +22,6 @@ export default function Component() {
     { x: ["2", "1"], operator: "<=", value: "8" },
     { x: ["1", "3"], operator: "<=", value: "10" },
   ]);
-  const [solution, setSolution] = useState<number[] | null>(null);
   const [signConstraints, setSignConstraints] = useState<string[]>(
     Array(objective.length).fill(">=")
   );
@@ -70,28 +69,6 @@ export default function Component() {
     setConstraints(
       constraints.map((c, i) => (i === index ? { ...c, value: value } : c))
     );
-  };
-
-  const solveProblem = () => {
-    const a11 = Number.parseFloat(constraints[0].x[0]);
-    const a12 = Number.parseFloat(constraints[0].x[1]);
-    const a21 = Number.parseFloat(constraints[1].x[0]);
-    const a22 = Number.parseFloat(constraints[1].x[1]);
-    const b1 = Number.parseFloat(constraints[0].value);
-    const b2 = Number.parseFloat(constraints[1].value);
-
-    // Solving a simple system of equations for intersection point
-    const determinant = a11 * a22 - a12 * a21;
-
-    if (determinant === 0) {
-      alert("No unique solution exists.");
-      return;
-    }
-
-    const x1 = (b1 * a22 - b2 * a12) / determinant;
-    const x2 = (a11 * b2 - a21 * b1) / determinant;
-
-    setSolution([x1, x2]);
   };
 
   const updateSignConstraint = (index: number, value: string) => {
@@ -214,17 +191,7 @@ export default function Component() {
             // signConstraints={signConstraints}
           />
 
-          <Button onClick={solveProblem}>Solve</Button>
         </div>
-
-        {solution && (
-          <div className="bg-muted/50 p-6 rounded-lg">
-            <h2 className="text-lg font-semibold mb-4">Solution:</h2>
-            <div className="font-serif">
-              x1 = {solution[0]}, x2 = {solution[1]}
-            </div>
-          </div>
-        )}
       </div>
       {/* Conditionally render DesmosGraph if there are 2 or fewer variables */}
       {/* {objective.length <= 2 && (
