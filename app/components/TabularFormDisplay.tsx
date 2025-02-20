@@ -1,4 +1,4 @@
-import type React from "react";
+import React from "react";
 import type { LinearProblem } from "@/types/LinearProblem";
 
 interface TabularFormDisplayProps {
@@ -7,15 +7,11 @@ interface TabularFormDisplayProps {
 
 // Helper function to find the pivot column
 const findPivotColumn = (objectiveRow: number[]): number => {
-  let minVal = 0;
-  let minIndex = -1;
-  for (let i = 0; i < objectiveRow.length; i++) {
-    if (objectiveRow[i] < minVal) {
-      minVal = objectiveRow[i];
-      minIndex = i;
-    }
-  }
-  return minIndex;
+  const minIndex = objectiveRow.reduce(
+    (minIdx, value, idx) => (value < objectiveRow[minIdx] ? idx : minIdx),
+    0
+  );
+  return objectiveRow[minIndex] < 0 ? minIndex : -1;
 };
 
 // Helper function to find the pivot row
@@ -24,15 +20,16 @@ const findPivotRow = (tableau: number[][], pivotColIndex: number): number => {
   let minRatioIndex = -1;
 
   for (let i = 1; i < tableau.length; i++) {
-    if (tableau[i][pivotColIndex] > 0) {
-      const ratio =
-        tableau[i][tableau[0].length - 1] / tableau[i][pivotColIndex];
+    const pivotColValue = tableau[i][pivotColIndex];
+    if (pivotColValue > 0) {
+      const ratio = tableau[i][tableau[0].length - 1] / pivotColValue;
       if (ratio < minRatio) {
         minRatio = ratio;
         minRatioIndex = i;
       }
     }
   }
+
   return minRatioIndex;
 };
 
@@ -43,41 +40,33 @@ const performRowOperation = (
   pivotColIndex: number
 ): number[][] => {
   const pivotValue = tableau[pivotRowIndex][pivotColIndex];
-  const newTableau = tableau.map((row, rowIndex) => {
-    if (rowIndex === pivotRowIndex) {
-      return row.map((cell) => cell / pivotValue);
-    } else {
+
+  return tableau.map((row, rowIndex) =>
+    row.map((cell, colIndex) => {
+      if (rowIndex === pivotRowIndex) {
+        return cell / pivotValue;
+      }
       const factor = tableau[rowIndex][pivotColIndex];
-      return row.map(
-        (cell, colIndex) =>
-          cell - factor * (tableau[pivotRowIndex][colIndex] / pivotValue)
-      );
-    }
-  });
-  return newTableau;
+      return cell - factor * (tableau[pivotRowIndex][colIndex] / pivotValue);
+    })
+  );
 };
 
 // Function to perform Simplex iterations
 const simplexSolve = (initialTableau: number[][]): number[][][] => {
   let tableau = initialTableau;
-  let iterations: number[][][] = [tableau];
+  const iterations: number[][][] = [tableau];
   let iterationCount = 0;
 
-  while (true && iterationCount < 10) {
+  while (iterationCount < 10) {
     iterationCount++;
-    // Find pivot column
-    const objectiveRow = tableau[0];
-    const pivotColIndex = findPivotColumn(objectiveRow);
 
-    // If no pivot column, the solution is optimal
-    if (pivotColIndex === -1) {
-      break;
-    }
+    // Find pivot column
+    const pivotColIndex = findPivotColumn(tableau[0]);
+    if (pivotColIndex === -1) break; // Optimal solution found
 
     // Find pivot row
     const pivotRowIndex = findPivotRow(tableau, pivotColIndex);
-
-    // If no pivot row, the problem is unbounded
     if (pivotRowIndex === -1) {
       console.log("Problem is unbounded");
       break;
@@ -105,11 +94,7 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
   // Process constraints to identify slack variables
   let slackCount = 0;
   const constraintsWithSlackInfo = constraints.map((constraint) => {
-    let slackIndex: number | null = null;
-    if (constraint.operator !== "=") {
-      slackIndex = slackCount;
-      slackCount++;
-    }
+    const slackIndex = constraint.operator !== "=" ? slackCount++ : null;
     return { ...constraint, slackIndex };
   });
 
@@ -152,7 +137,7 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
   return (
     <div className="bg-muted/50 p-6 rounded-lg overflow-x-auto">
       {iterations.map((tableau, iterationIndex) => (
-        <div key={iterationIndex as number} className="mb-8">
+        <div key={iterationIndex} className="mb-8">
           <h2 className="text-lg font-semibold mb-4">
             Iteration {iterationIndex + 1}
           </h2>
@@ -161,12 +146,12 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
               <tr>
                 <th className="px-4 py-2">Basis</th>
                 {adjustedObjective.map((_, index) => (
-                  <th key={`x${index as number}`} className="px-4 py-2">
+                  <th key={`x${index}`} className="px-4 py-2">
                     x{index + 1}
                   </th>
                 ))}
                 {Array.from({ length: numSlackVariables }).map((_, index) => (
-                  <th key={`s${index as number}`} className="px-4 py-2">
+                  <th key={`s${index}`} className="px-4 py-2">
                     s{index + 1}
                   </th>
                 ))}
@@ -175,13 +160,13 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
             </thead>
             <tbody>
               {tableau.map((row, rowIndex) => (
-                <tr key={`row${rowIndex as number}`}>
+                <tr key={`row${rowIndex}`}>
                   <td className="border px-4 py-2">
                     {rowIndex === 0 ? "Z" : `x${rowIndex}`}
                   </td>
                   {row.map((cell, colIndex) => (
                     <td
-                      key={`cell${rowIndex}-${colIndex as number}`}
+                      key={`cell${rowIndex}-${colIndex}`}
                       className="border px-4 py-2"
                     >
                       {cell.toFixed(2)}
@@ -197,4 +182,4 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
   );
 };
 
-export default TabularFormDisplay;
+export default React.memo(TabularFormDisplay);
