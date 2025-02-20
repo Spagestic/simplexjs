@@ -54,9 +54,15 @@ const performRowOperation = (
 };
 
 // Function to perform Simplex iterations
-const simplexSolve = (initialTableau: number[][]): number[][][] => {
+const simplexSolve = (
+  initialTableau: number[][]
+): {
+  iterations: number[][][];
+  pivotIndices: { pivotColIndex: number; pivotRowIndex: number }[];
+} => {
   let tableau = initialTableau;
   const iterations: number[][][] = [tableau];
+  const pivotIndices: { pivotColIndex: number; pivotRowIndex: number }[] = [];
   let iterationCount = 0;
 
   while (iterationCount < 10) {
@@ -73,12 +79,14 @@ const simplexSolve = (initialTableau: number[][]): number[][][] => {
       break;
     }
 
+    pivotIndices.push({ pivotColIndex, pivotRowIndex });
+
     // Perform row operations
     tableau = performRowOperation(tableau, pivotRowIndex, pivotColIndex);
     iterations.push(tableau);
   }
 
-  return iterations;
+  return { iterations, pivotIndices };
 };
 
 const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
@@ -133,7 +141,7 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
   const initialTableau: number[][] = [objectiveRow, ...initialTableData];
 
   // Solve the problem using the simplex method
-  const iterations = simplexSolve(initialTableau);
+  const { iterations, pivotIndices } = simplexSolve(initialTableau);
 
   return (
     <div className="bg-muted/50 p-6 rounded-lg overflow-x-auto">
@@ -144,6 +152,7 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
           iterationIndex={iterationIndex}
           numSlackVariables={numSlackVariables}
           adjustedObjective={adjustedObjective}
+          pivotIndices={pivotIndices[iterationIndex]}
         />
       ))}
     </div>

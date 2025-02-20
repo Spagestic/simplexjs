@@ -14,6 +14,7 @@ interface TableauProps {
   iterationIndex: number;
   numSlackVariables: number;
   adjustedObjective: number[];
+  pivotIndices?: { pivotColIndex: number; pivotRowIndex: number };
 }
 
 const Tableau: React.FC<TableauProps> = ({
@@ -21,7 +22,17 @@ const Tableau: React.FC<TableauProps> = ({
   iterationIndex,
   numSlackVariables,
   adjustedObjective,
+  pivotIndices,
 }) => {
+  const enteringVariable =
+    pivotIndices?.pivotColIndex !== undefined
+      ? `x${pivotIndices.pivotColIndex + 1}`
+      : null;
+  const leavingVariable =
+    pivotIndices?.pivotRowIndex !== undefined
+      ? `x${pivotIndices.pivotRowIndex}`
+      : null;
+
   return (
     <div className="mb-8">
       <h2 className="text-lg font-semibold mb-4">
@@ -29,7 +40,19 @@ const Tableau: React.FC<TableauProps> = ({
       </h2>
       <Table>
         <TableCaption>
-          Simplex Tableau - Iteration {iterationIndex + 1}
+          {/* Simplex Tableau - Iteration {iterationIndex + 1} */}
+          <span className="">
+            {enteringVariable && (
+              <>
+                Entering Variable: <b>{enteringVariable}</b>&nbsp;
+              </>
+            )}
+            {leavingVariable && (
+              <>
+                Leaving Variable: <b>{leavingVariable}</b>
+              </>
+            )}
+          </span>
         </TableCaption>
         <TableHeader>
           <TableRow>
@@ -49,18 +72,40 @@ const Tableau: React.FC<TableauProps> = ({
         </TableHeader>
         <TableBody>
           {tableau.map((row, rowIndex) => (
-            <TableRow key={`row${rowIndex as number}`}>
+            <TableRow
+              key={`row${rowIndex as number}`}
+              className={
+                pivotIndices?.pivotRowIndex === rowIndex ? "bg-accent" : ""
+              }
+            >
               <TableCell className="border px-4 py-2">
                 {rowIndex === 0 ? "Z" : `x${rowIndex}`}
               </TableCell>
-              {row.map((cell, colIndex) => (
-                <TableCell
-                  key={`cell${rowIndex}-${colIndex as number}`}
-                  className="border px-4 py-2"
-                >
-                  {cell.toFixed(2)}
-                </TableCell>
-              ))}
+              {row.map((cell, colIndex) => {
+                let cellStyle = "border px-4 py-2";
+                if (pivotIndices) {
+                  if (pivotIndices.pivotColIndex === colIndex) {
+                    cellStyle += " bg-accent";
+                  }
+                  if (pivotIndices.pivotRowIndex === rowIndex) {
+                    cellStyle += " bg-accent";
+                  }
+                  if (
+                    pivotIndices.pivotRowIndex === rowIndex &&
+                    pivotIndices.pivotColIndex === colIndex
+                  ) {
+                    cellStyle += " font-bold";
+                  }
+                }
+                return (
+                  <TableCell
+                    key={`cell${rowIndex}-${colIndex as number}`}
+                    className={cellStyle}
+                  >
+                    {cell.toFixed(2)}
+                  </TableCell>
+                );
+              })}
             </TableRow>
           ))}
         </TableBody>
