@@ -1,5 +1,6 @@
 import React from "react";
 import type { LinearProblem } from "@/types/LinearProblem";
+import Tableau from "./Tableau";
 
 interface TabularFormDisplayProps {
   linearProblem: LinearProblem;
@@ -137,46 +138,13 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
   return (
     <div className="bg-muted/50 p-6 rounded-lg overflow-x-auto">
       {iterations.map((tableau, iterationIndex) => (
-        <div key={iterationIndex as number} className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">
-            Iteration {iterationIndex + 1}
-          </h2>
-          <table className="table-auto w-full">
-            <thead>
-              <tr>
-                <th className="px-4 py-2">Basis</th>
-                {adjustedObjective.map((_, index) => (
-                  <th key={`x${index as number}`} className="px-4 py-2">
-                    x{index + 1}
-                  </th>
-                ))}
-                {Array.from({ length: numSlackVariables }).map((_, index) => (
-                  <th key={`s${index as number}`} className="px-4 py-2">
-                    s{index + 1}
-                  </th>
-                ))}
-                <th className="px-4 py-2">RHS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tableau.map((row, rowIndex) => (
-                <tr key={`row${rowIndex as number}`}>
-                  <td className="border px-4 py-2">
-                    {rowIndex === 0 ? "Z" : `x${rowIndex}`}
-                  </td>
-                  {row.map((cell, colIndex) => (
-                    <td
-                      key={`cell${rowIndex}-${colIndex as number}`}
-                      className="border px-4 py-2"
-                    >
-                      {cell.toFixed(2)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Tableau
+          key={iterationIndex as number}
+          tableau={tableau}
+          iterationIndex={iterationIndex}
+          numSlackVariables={numSlackVariables}
+          adjustedObjective={adjustedObjective}
+        />
       ))}
     </div>
   );
