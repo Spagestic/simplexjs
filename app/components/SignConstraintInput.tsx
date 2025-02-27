@@ -29,8 +29,8 @@ const SignConstraintInput: React.FC<SignConstraintInputProps> = ({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value=">=">&gt;= 0</SelectItem>
-          <SelectItem value="<=">&lt;= 0</SelectItem>
-          <SelectItem value="=">= 0</SelectItem>
+          {/* <SelectItem value="<=">&lt;= 0</SelectItem> */}
+          {/* <SelectItem value="=">= 0</SelectItem> */}
           <SelectItem value="free">Free</SelectItem>
         </SelectContent>
       </Select>
