@@ -5,7 +5,7 @@ import ConstraintInput from "./components/ConstraintInput";
 import ObjectiveInput from "./components/ObjectiveInput";
 import ProblemPreview from "./components/ProblemPreview";
 import ProblemTypeSelector from "./components/ProblemTypeSelector";
-// import StandardFormDisplay from "./components/StandardFormDisplay";
+import StandardFormDisplay from "./components/StandardFormDisplay";
 import SignConstraintInput from "./components/SignConstraintInput";
 import type { Constraint } from "@/types/Constraint";
 import AugmentedFormDisplay from "./components/AugmentedFormDisplay";
@@ -149,19 +149,19 @@ export default function Component() {
               signConstraints={signConstraints}
             />
 
-            {/* <StandardFormDisplay
-            linearProblem={{
-              problemType,
-              objective: objective.map(Number),
-              constraints: constraints.map((c) => ({
-                coefficients: c.x.map(Number),
-                operator: c.operator,
-                value: Number(c.value),
-              })),
-              signConstraints: signConstraints,
-            }}
-            signConstraints={signConstraints}
-          /> */}
+            <StandardFormDisplay
+              linearProblem={{
+                problemType,
+                objective: objective.map(Number),
+                constraints: constraints.map((c) => ({
+                  coefficients: c.x.map(Number),
+                  operator: c.operator,
+                  value: Number(c.value),
+                })),
+                signConstraints: signConstraints,
+              }}
+              signConstraints={signConstraints}
+            />
 
             <AugmentedFormDisplay
               linearProblem={{
