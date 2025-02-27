@@ -45,7 +45,7 @@ const getBasisVariable = (
       if (col < numOriginalVariables) {
         return `x${col + 1}`;
       } else {
-        return `s${col - numOriginalVariables + 1}`;
+        return `x${numOriginalVariables + (col - numOriginalVariables) + 1}`;
       }
     }
   }
@@ -110,8 +110,11 @@ const Tableau: React.FC<TableauProps> = ({
               </TableHead>
             ))}
             {Array.from({ length: numSlackVariables }).map((_, index) => (
-              <TableHead key={`s${index as number}`} className="px-4 py-2">
-                s{index + 1}
+              <TableHead
+                key={`x${adjustedObjective.length + index + 1} as number`}
+                className="px-4 py-2"
+              >
+                x{adjustedObjective.length + index + 1}
               </TableHead>
             ))}
             <TableHead className="px-4 py-2">RHS</TableHead>

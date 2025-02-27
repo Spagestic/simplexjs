@@ -75,11 +75,11 @@ const AugmentedFormDisplay: React.FC<AugmentedFormDisplayProps> = ({
                       </React.Fragment>
                     );
                   }
-                  const slackIndex = i - numOriginalVariables + 1;
+                  const slackIndex = i + 1;
                   return (
                     <React.Fragment key={i as number}>
                       {xValue >= 0 && i > 0 ? " + " : ""}
-                      {Number(xValue) || 0}s<sub>{slackIndex}</sub>
+                      {Number(xValue) || 0}x<sub>{slackIndex}</sub>
                     </React.Fragment>
                   );
                 })}{" "}
@@ -99,7 +99,7 @@ const AugmentedFormDisplay: React.FC<AugmentedFormDisplayProps> = ({
             ))}
             {[...Array(numSlackVariables)].map((_, index) => (
               <React.Fragment key={index as number}>
-                , s<sub>{index + 1}</sub> &gt;= 0
+                , x<sub>{numOriginalVariables + index + 1}</sub> &gt;= 0
                 {index < numSlackVariables - 1 ? ", " : ""}
               </React.Fragment>
             ))}
