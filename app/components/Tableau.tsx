@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -8,6 +8,7 @@ import {
   TableRow,
   TableCaption,
 } from "@/components/ui/table";
+import { RatioCalculations } from "./RatioCalculations";
 
 interface TableauProps {
   tableau: number[][];
@@ -19,13 +20,12 @@ interface TableauProps {
 }
 
 // Function to determine the basis variable for a given row
-const getBasisVariable = (
+export const getBasisVariable = (
   tableau: number[][],
   rowIndex: number,
   numOriginalVariables: number,
   numSlackVariables: number
 ): string | null => {
-  // const row = tableau[rowIndex];
   const numVariables = numOriginalVariables + numSlackVariables;
 
   for (let col = 0; col < numVariables; col++) {
@@ -61,36 +61,50 @@ const Tableau: React.FC<TableauProps> = ({
   pivotIndices,
   numOriginalVariables,
 }) => {
-  const enteringVariable =
-    pivotIndices?.pivotColIndex !== undefined
-      ? `x${pivotIndices.pivotColIndex + 1}`
-      : null;
-  const leavingVariable =
-    pivotIndices?.pivotRowIndex !== undefined
-      ? `x${pivotIndices.pivotRowIndex}`
-      : null;
+  const enteringVariable = useMemo(
+    () =>
+      pivotIndices?.pivotColIndex !== undefined
+        ? `x${pivotIndices.pivotColIndex + 1}`
+        : null,
+    [pivotIndices]
+  );
 
-  const calculateLeavingVariableRatios = () => {
-    const pivotColIndex = pivotIndices?.pivotColIndex;
+  // Calculate ratios when pivot column is selected
+  const ratios = useMemo(() => {
+    if (pivotIndices?.pivotColIndex === undefined) return null;
 
-    if (pivotColIndex === undefined) {
-      return null;
-    }
-
-    const ratios = tableau.slice(1).map((row, rowIndex) => {
-      const a = tableau[rowIndex + 1][pivotColIndex];
+    return tableau.slice(1).map((row, rowIndex) => {
+      const a = tableau[rowIndex + 1][pivotIndices.pivotColIndex];
       const b = row[row.length - 1];
-
-      if (a > 0) {
-        return b / a;
-      } else {
-        return Infinity;
-      }
+      return a > 0 ? b / a : Infinity;
     });
-    return ratios;
-  };
+  }, [tableau, pivotIndices]);
 
-  const ratios = calculateLeavingVariableRatios();
+  // Find leaving variable basis
+  const leavingVariableBasis = useMemo(() => {
+    if (!pivotIndices?.pivotRowIndex) return null;
+
+    return getBasisVariable(
+      tableau,
+      pivotIndices.pivotRowIndex,
+      numOriginalVariables,
+      numSlackVariables
+    );
+  }, [tableau, pivotIndices, numOriginalVariables, numSlackVariables]);
+
+  // Check if a variable is basic
+  const isBasicVariable = (variableIndex: number) => {
+    return tableau.some((row, rowIdx) => {
+      if (rowIdx === 0) return false; // Skip objective row
+      const basisVar = getBasisVariable(
+        tableau,
+        rowIdx,
+        numOriginalVariables,
+        numSlackVariables
+      );
+      return basisVar === `x${variableIndex}`;
+    });
+  };
 
   return (
     <div className="mb-8">
@@ -99,141 +113,63 @@ const Tableau: React.FC<TableauProps> = ({
       </h2>
       <Table>
         <TableCaption>
-          {/* Simplex Tableau - Iteration {iterationIndex + 1} */}
-          <span className="">
+          <div className="mb-2">
             {enteringVariable && (
-              <>
-                Entering Variable: <b>{enteringVariable}</b>&nbsp;
-              </>
+              <span className="mr-4">
+                Entering Variable: <b>{enteringVariable}</b>
+              </span>
             )}
-            {leavingVariable && (
-              <>
-                Leaving Variable:{" "}
-                <b>
-                  {tableau[pivotIndices?.pivotRowIndex as number]
-                    ? getBasisVariable(
-                        tableau,
-                        pivotIndices?.pivotRowIndex as number,
-                        numOriginalVariables,
-                        numSlackVariables
-                      )
-                    : null}
-                </b>
-              </>
+            {leavingVariableBasis && (
+              <span>
+                Leaving Variable: <b>{leavingVariableBasis}</b>
+              </span>
             )}
-          </span>
-          {ratios && enteringVariable && (
-            <ol className="list-decimal pl-4">
-              {ratios.map((ratio, index) => {
-                const basisVariable = getBasisVariable(
-                  tableau,
-                  index + 1,
-                  numOriginalVariables,
-                  numSlackVariables
-                );
-                const row = tableau[index + 1];
-                const rhsValue = row[row.length - 1];
-                const pivotColValue =
-                  row[pivotIndices?.pivotColIndex as number];
-                return (
-                  <li key={index as number}>
-                    <b>
-                      R{index + 2}: ({basisVariable})
-                    </b>
-                    <ul>
-                      <li>
-                        {/* Displaying the equation for the row */}
-                        {row
-                          .slice(0, numOriginalVariables + numSlackVariables)
-                          .map((coeff, i) => {
-                            if (coeff !== 0) {
-                              return (
-                                <React.Fragment key={i as number}>
-                                  {coeff > 0 && i > 0 ? " + " : ""}
-                                  {coeff !== 1 && coeff !== -1
-                                    ? coeff.toFixed(2)
-                                    : coeff === -1
-                                    ? "-"
-                                    : ""}
-                                  x<sub>{i + 1}</sub>
-                                </React.Fragment>
-                              );
-                            }
-                            return null;
-                          })}
-                        {" = "}
-                        {rhsValue.toFixed(2)}
-                      </li>
-                      <li>
-                        {/* Displaying the pivot column value and the RHS value */}
-                        {pivotColValue !== 1 ? pivotColValue.toFixed(2) : ""}x
-                        <sub>{(pivotIndices?.pivotColIndex as number) + 1}</sub>{" "}
-                        = {rhsValue.toFixed(2)}
-                      </li>
-                      <li>
-                        {/* Displaying the ratio and marking the minimum ratio */}
-                        x
-                        <sub>{(pivotIndices?.pivotColIndex as number) + 1}</sub>{" "}
-                        = {ratio === Infinity ? "∞" : ratio.toFixed(4)}
-                        {ratio === Math.min(...ratios) ? " ✓" : ""}
-                      </li>
-                    </ul>
-                  </li>
-                );
-              })}
-            </ol>
+          </div>
+
+          {ratios && enteringVariable && pivotIndices && (
+            <RatioCalculations
+              tableau={tableau}
+              ratios={ratios}
+              pivotIndices={pivotIndices}
+              numOriginalVariables={numOriginalVariables}
+              numSlackVariables={numSlackVariables}
+              getBasisVariable={getBasisVariable}
+            />
           )}
         </TableCaption>
+
         <TableHeader>
           <TableRow>
             <TableHead className="px-4 py-2">Basis</TableHead>
+
+            {/* Original variables */}
             {adjustedObjective.map((_, index) => {
               const variableIndex = index + 1;
-              const isBasicVariable = tableau.some((row) => {
-                if (row === tableau[0]) return false; // Skip the objective row
-                const basisVariable = getBasisVariable(
-                  tableau,
-                  tableau.indexOf(row),
-                  numOriginalVariables,
-                  numSlackVariables
-                );
-                return basisVariable === `x${variableIndex}`;
-              });
+              const isBasic = isBasicVariable(variableIndex);
 
               return (
-                <TableHead key={`x${index as number}`} className="px-4 py-2">
-                  {!isBasicVariable
-                    ? `(x${variableIndex})`
-                    : `x${variableIndex}`}
+                <TableHead key={`x${index}`} className="px-4 py-2">
+                  {!isBasic ? `(x${variableIndex})` : `x${variableIndex}`}
                 </TableHead>
               );
             })}
+
+            {/* Slack variables */}
             {Array.from({ length: numSlackVariables }).map((_, index) => {
               const variableIndex = adjustedObjective.length + index + 1;
-              const isBasicVariable = tableau.some((row) => {
-                if (row === tableau[0]) return false; // Skip the objective row
-                const basisVariable = getBasisVariable(
-                  tableau,
-                  tableau.indexOf(row),
-                  numOriginalVariables,
-                  numSlackVariables
-                );
-                return basisVariable === `x${variableIndex}`;
-              });
+              const isBasic = isBasicVariable(variableIndex);
+
               return (
-                <TableHead
-                  key={`x${adjustedObjective.length + index + 1} as number`}
-                  className="px-4 py-2"
-                >
-                  {!isBasicVariable
-                    ? `(x${variableIndex})`
-                    : `x${variableIndex}`}
+                <TableHead key={`x${variableIndex}`} className="px-4 py-2">
+                  {!isBasic ? `(x${variableIndex})` : `x${variableIndex}`}
                 </TableHead>
               );
             })}
+
             <TableHead className="px-4 py-2">RHS</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {tableau.map((row, rowIndex) => {
             const basisVariable =
@@ -245,35 +181,30 @@ const Tableau: React.FC<TableauProps> = ({
                     numOriginalVariables,
                     numSlackVariables
                   ) || "";
+
+            const isPivotRow = pivotIndices?.pivotRowIndex === rowIndex;
+
             return (
               <TableRow
-                key={`row${rowIndex as number}`}
-                className={
-                  pivotIndices?.pivotRowIndex === rowIndex ? "bg-accent" : ""
-                }
+                key={`row${rowIndex}`}
+                className={isPivotRow ? "bg-accent" : ""}
               >
                 <TableCell className="border px-4 py-2">
                   {basisVariable}
                 </TableCell>
+
                 {row.map((cell, colIndex) => {
+                  const isPivotCol = pivotIndices?.pivotColIndex === colIndex;
+                  const isPivotCell = isPivotRow && isPivotCol;
+
                   let cellStyle = "border px-4 py-2";
-                  if (pivotIndices) {
-                    if (pivotIndices.pivotColIndex === colIndex) {
-                      cellStyle += " bg-accent";
-                    }
-                    if (pivotIndices.pivotRowIndex === rowIndex) {
-                      cellStyle += " bg-accent";
-                    }
-                    if (
-                      pivotIndices.pivotRowIndex === rowIndex &&
-                      pivotIndices.pivotColIndex === colIndex
-                    ) {
-                      cellStyle += " font-bold";
-                    }
-                  }
+                  if (isPivotCol) cellStyle += " bg-accent";
+                  if (isPivotRow) cellStyle += " bg-accent";
+                  if (isPivotCell) cellStyle += " font-bold";
+
                   return (
                     <TableCell
-                      key={`cell${rowIndex}-${colIndex as number}`}
+                      key={`cell${rowIndex}-${colIndex}`}
                       className={cellStyle}
                     >
                       {cell.toFixed(2)}
