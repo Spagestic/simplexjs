@@ -86,7 +86,17 @@ const Tableau: React.FC<TableauProps> = ({
             )}
             {leavingVariable && (
               <>
-                Leaving Variable: <b>{leavingVariable}</b>
+                Leaving Variable:{" "}
+                <b>
+                  {tableau[pivotIndices?.pivotRowIndex as number]
+                    ? getBasisVariable(
+                        tableau,
+                        pivotIndices?.pivotRowIndex as number,
+                        numOriginalVariables,
+                        numSlackVariables
+                      )
+                    : null}
+                </b>
               </>
             )}
           </span>
