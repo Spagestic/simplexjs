@@ -38,7 +38,7 @@ export const RatioCalculations: React.FC<RatioCalculationsProps> = ({
         const pivotColValue = row[pivotIndices.pivotColIndex];
 
         return (
-          <li key={index}>
+          <div key={index}>
             <b>
               R{index + 2}: ({basisVariable})
             </b>
@@ -76,7 +76,7 @@ export const RatioCalculations: React.FC<RatioCalculationsProps> = ({
                 {ratio === minRatio ? " ✓" : ""}
               </li>
             </ul>
-          </li>
+          </div>
         );
       })}
     </ol>
