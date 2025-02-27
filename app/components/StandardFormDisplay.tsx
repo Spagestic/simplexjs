@@ -44,9 +44,7 @@ const StandardFormDisplay: React.FC<StandardFormDisplayProps> = ({
 
     // For additional z_i variables added due to free variables
     if (index >= originalVarCount) {
-      // This is a z_i variable from a free variable substitution
-      const originalIndex = freeVarIndices[index - originalVarCount];
-      return null; // Skip rendering here as we've already handled it in the y_i - z_i pair
+      return null;
     }
 
     // For regular variables
