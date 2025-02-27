@@ -104,19 +104,50 @@ const Tableau: React.FC<TableauProps> = ({
         <TableHeader>
           <TableRow>
             <TableHead className="px-4 py-2">Basis</TableHead>
-            {adjustedObjective.map((_, index) => (
-              <TableHead key={`x${index as number}`} className="px-4 py-2">
-                x{index + 1}
-              </TableHead>
-            ))}
-            {Array.from({ length: numSlackVariables }).map((_, index) => (
-              <TableHead
-                key={`x${adjustedObjective.length + index + 1} as number`}
-                className="px-4 py-2"
-              >
-                x{adjustedObjective.length + index + 1}
-              </TableHead>
-            ))}
+            {adjustedObjective.map((_, index) => {
+              const variableIndex = index + 1;
+              const isBasicVariable = tableau.some((row) => {
+                if (row === tableau[0]) return false; // Skip the objective row
+                const basisVariable = getBasisVariable(
+                  tableau,
+                  tableau.indexOf(row),
+                  numOriginalVariables,
+                  numSlackVariables
+                );
+                return basisVariable === `x${variableIndex}`;
+              });
+
+              return (
+                <TableHead key={`x${index as number}`} className="px-4 py-2">
+                  {!isBasicVariable
+                    ? `(x${variableIndex})`
+                    : `x${variableIndex}`}
+                </TableHead>
+              );
+            })}
+            {Array.from({ length: numSlackVariables }).map((_, index) => {
+              const variableIndex = adjustedObjective.length + index + 1;
+              const isBasicVariable = tableau.some((row) => {
+                if (row === tableau[0]) return false; // Skip the objective row
+                const basisVariable = getBasisVariable(
+                  tableau,
+                  tableau.indexOf(row),
+                  numOriginalVariables,
+                  numSlackVariables
+                );
+                return basisVariable === `x${variableIndex}`;
+              });
+              return (
+                <TableHead
+                  key={`x${adjustedObjective.length + index + 1} as number`}
+                  className="px-4 py-2"
+                >
+                  {!isBasicVariable
+                    ? `(x${variableIndex})`
+                    : `x${variableIndex}`}
+                </TableHead>
+              );
+            })}
             <TableHead className="px-4 py-2">RHS</TableHead>
           </TableRow>
         </TableHeader>
