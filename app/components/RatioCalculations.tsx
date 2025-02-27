@@ -24,6 +24,11 @@ export const RatioCalculations: React.FC<RatioCalculationsProps> = ({
 }) => {
   const minRatio = Math.min(...ratios.filter((r) => r !== Infinity));
 
+  const formatValue = (value: number): string => {
+    const formatted = Number(value.toFixed(4));
+    return formatted.toString();
+  };
+
   return (
     <ol className="list-decimal pl-4">
       {ratios.map((ratio, index) => {
@@ -38,7 +43,7 @@ export const RatioCalculations: React.FC<RatioCalculationsProps> = ({
         const pivotColValue = row[pivotIndices.pivotColIndex];
 
         return (
-          <div key={index}>
+          <li key={index} className="list-none">
             <b>
               R{index + 2}: ({basisVariable})
             </b>
@@ -52,7 +57,7 @@ export const RatioCalculations: React.FC<RatioCalculationsProps> = ({
                         <React.Fragment key={i}>
                           {coeff > 0 && i > 0 ? " + " : ""}
                           {coeff !== 1 && coeff !== -1
-                            ? coeff.toFixed(2)
+                            ? formatValue(coeff)
                             : coeff === -1
                             ? "-"
                             : ""}
@@ -63,20 +68,20 @@ export const RatioCalculations: React.FC<RatioCalculationsProps> = ({
                     return null;
                   })}
                 {" = "}
-                {rhsValue.toFixed(2)}
+                {formatValue(rhsValue)}
               </li>
               <li>
-                {pivotColValue !== 1 ? pivotColValue.toFixed(2) : ""}x
+                {pivotColValue !== 1 ? formatValue(pivotColValue) : ""}x
                 <sub>{pivotIndices.pivotColIndex + 1}</sub> ={" "}
-                {rhsValue.toFixed(2)}
+                {formatValue(rhsValue)}
               </li>
               <li>
                 x<sub>{pivotIndices.pivotColIndex + 1}</sub> ={" "}
-                {ratio === Infinity ? "∞" : ratio.toFixed(4)}
+                {ratio === Infinity ? "∞" : formatValue(ratio)}
                 {ratio === minRatio ? " ✓" : ""}
               </li>
             </ul>
-          </div>
+          </li>
         );
       })}
     </ol>
