@@ -143,6 +143,33 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
   // Solve the problem using the simplex method
   const { iterations, pivotIndices } = simplexSolve(initialTableau);
 
+  // Extract optimal solution from the final tableau
+  const finalTableau = iterations[iterations.length - 1];
+  const numVariables = numOriginalVariables + numSlackVariables;
+  const optimalSolution: { [key: string]: number } = {};
+
+  for (let col = 0; col < numVariables; col++) {
+    let basicRowIndex = -1;
+    let nonZeroCount = 0;
+
+    for (let row = 1; row < finalTableau.length; row++) {
+      if (finalTableau[row][col] !== 0) {
+        nonZeroCount++;
+        basicRowIndex = row;
+      }
+    }
+
+    if (nonZeroCount === 1) {
+      optimalSolution[`x${col + 1}`] =
+        finalTableau[basicRowIndex][finalTableau[0].length - 1];
+    } else {
+      optimalSolution[`x${col + 1}`] = 0;
+    }
+  }
+
+  // Extract the optimal objective value from the final tableau
+  const optimalObjectiveValue = -finalTableau[0][finalTableau[0].length - 1];
+
   return (
     <div className="bg-muted/50 p-6 rounded-lg overflow-x-auto">
       {iterations.map((tableau, iterationIndex) => (
@@ -156,6 +183,19 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
           numOriginalVariables={numOriginalVariables}
         />
       ))}
+
+      {/* Display Optimal Solution */}
+      <div>
+        <h3 className="text-lg font-semibold mt-4">Optimal Solution:</h3>
+        <p>
+          ({Object.keys(optimalSolution).join(", ")}) = (
+          {Object.values(optimalSolution)
+            .map((value) => value.toFixed(2))
+            .join(", ")}
+          )
+        </p>
+        <p>Optimal Objective Value (z*)= {optimalObjectiveValue.toFixed(2)}</p>
+      </div>
     </div>
   );
 };
