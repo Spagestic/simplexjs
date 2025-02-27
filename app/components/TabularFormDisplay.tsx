@@ -184,7 +184,7 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
         />
       ))}
 
-      {/* Display Optimal Solution */}
+      {/* Optimal Solution Display */}
       <div>
         <h3 className="text-lg font-semibold mt-4">Optimal Solution:</h3>
         <p>
@@ -194,7 +194,7 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
             .join(", ")}
           )
         </p>
-        <p>Optimal Objective Value (z*)= {optimalObjectiveValue.toFixed(2)}</p>
+        <p>Optimal Objective Value (z*) = {optimalObjectiveValue.toFixed(2)}</p>
       </div>
     </div>
   );
