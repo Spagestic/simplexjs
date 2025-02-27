@@ -1,4 +1,4 @@
-import type React from "react";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -70,6 +70,28 @@ const Tableau: React.FC<TableauProps> = ({
       ? `x${pivotIndices.pivotRowIndex}`
       : null;
 
+  const calculateLeavingVariableRatios = () => {
+    const pivotColIndex = pivotIndices?.pivotColIndex;
+
+    if (pivotColIndex === undefined) {
+      return null;
+    }
+
+    const ratios = tableau.slice(1).map((row, rowIndex) => {
+      const a = tableau[rowIndex + 1][pivotColIndex];
+      const b = row[row.length - 1];
+
+      if (a > 0) {
+        return b / a;
+      } else {
+        return Infinity;
+      }
+    });
+    return ratios;
+  };
+
+  const ratios = calculateLeavingVariableRatios();
+
   return (
     <div className="mb-8">
       <h2 className="text-lg font-semibold mb-4">
@@ -100,6 +122,67 @@ const Tableau: React.FC<TableauProps> = ({
               </>
             )}
           </span>
+          {ratios && enteringVariable && (
+            <ol className="list-decimal pl-4">
+              {ratios.map((ratio, index) => {
+                const basisVariable = getBasisVariable(
+                  tableau,
+                  index + 1,
+                  numOriginalVariables,
+                  numSlackVariables
+                );
+                const row = tableau[index + 1];
+                const rhsValue = row[row.length - 1];
+                const pivotColValue =
+                  row[pivotIndices?.pivotColIndex as number];
+                return (
+                  <li key={index as number}>
+                    <b>
+                      R{index + 2}: ({basisVariable})
+                    </b>
+                    <ul>
+                      <li>
+                        {/* Displaying the equation for the row */}
+                        {row
+                          .slice(0, numOriginalVariables + numSlackVariables)
+                          .map((coeff, i) => {
+                            if (coeff !== 0) {
+                              return (
+                                <React.Fragment key={i as number}>
+                                  {coeff > 0 && i > 0 ? " + " : ""}
+                                  {coeff !== 1 && coeff !== -1
+                                    ? coeff.toFixed(2)
+                                    : coeff === -1
+                                    ? "-"
+                                    : ""}
+                                  x<sub>{i + 1}</sub>
+                                </React.Fragment>
+                              );
+                            }
+                            return null;
+                          })}
+                        {" = "}
+                        {rhsValue.toFixed(2)}
+                      </li>
+                      <li>
+                        {/* Displaying the pivot column value and the RHS value */}
+                        {pivotColValue !== 1 ? pivotColValue.toFixed(2) : ""}x
+                        <sub>{(pivotIndices?.pivotColIndex as number) + 1}</sub>{" "}
+                        = {rhsValue.toFixed(2)}
+                      </li>
+                      <li>
+                        {/* Displaying the ratio and marking the minimum ratio */}
+                        x
+                        <sub>{(pivotIndices?.pivotColIndex as number) + 1}</sub>{" "}
+                        = {ratio === Infinity ? "∞" : ratio.toFixed(4)}
+                        {ratio === Math.min(...ratios) ? " ✓" : ""}
+                      </li>
+                    </ul>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
         </TableCaption>
         <TableHeader>
           <TableRow>
