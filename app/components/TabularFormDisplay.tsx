@@ -153,6 +153,7 @@ const TabularFormDisplay: React.FC<TabularFormDisplayProps> = ({
           numSlackVariables={numSlackVariables}
           adjustedObjective={adjustedObjective}
           pivotIndices={pivotIndices[iterationIndex]}
+          numOriginalVariables={numOriginalVariables}
         />
       ))}
     </div>

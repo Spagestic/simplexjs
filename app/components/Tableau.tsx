@@ -15,7 +15,43 @@ interface TableauProps {
   numSlackVariables: number;
   adjustedObjective: number[];
   pivotIndices?: { pivotColIndex: number; pivotRowIndex: number };
+  numOriginalVariables: number;
 }
+
+// Function to determine the basis variable for a given row
+const getBasisVariable = (
+  tableau: number[][],
+  rowIndex: number,
+  numOriginalVariables: number,
+  numSlackVariables: number
+): string | null => {
+  // const row = tableau[rowIndex];
+  const numVariables = numOriginalVariables + numSlackVariables;
+
+  for (let col = 0; col < numVariables; col++) {
+    let isBasisColumn = true;
+    for (let i = 0; i < tableau.length; i++) {
+      if (i === rowIndex) {
+        if (tableau[i][col] !== 1) {
+          isBasisColumn = false;
+          break;
+        }
+      } else if (tableau[i][col] !== 0) {
+        isBasisColumn = false;
+        break;
+      }
+    }
+    if (isBasisColumn) {
+      if (col < numOriginalVariables) {
+        return `x${col + 1}`;
+      } else {
+        return `s${col - numOriginalVariables + 1}`;
+      }
+    }
+  }
+
+  return null;
+};
 
 const Tableau: React.FC<TableauProps> = ({
   tableau,
@@ -23,6 +59,7 @@ const Tableau: React.FC<TableauProps> = ({
   numSlackVariables,
   adjustedObjective,
   pivotIndices,
+  numOriginalVariables,
 }) => {
   const enteringVariable =
     pivotIndices?.pivotColIndex !== undefined
@@ -71,43 +108,54 @@ const Tableau: React.FC<TableauProps> = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tableau.map((row, rowIndex) => (
-            <TableRow
-              key={`row${rowIndex as number}`}
-              className={
-                pivotIndices?.pivotRowIndex === rowIndex ? "bg-accent" : ""
-              }
-            >
-              <TableCell className="border px-4 py-2">
-                {rowIndex === 0 ? "Z" : `x${rowIndex}`}
-              </TableCell>
-              {row.map((cell, colIndex) => {
-                let cellStyle = "border px-4 py-2";
-                if (pivotIndices) {
-                  if (pivotIndices.pivotColIndex === colIndex) {
-                    cellStyle += " bg-accent";
-                  }
-                  if (pivotIndices.pivotRowIndex === rowIndex) {
-                    cellStyle += " bg-accent";
-                  }
-                  if (
-                    pivotIndices.pivotRowIndex === rowIndex &&
-                    pivotIndices.pivotColIndex === colIndex
-                  ) {
-                    cellStyle += " font-bold";
-                  }
+          {tableau.map((row, rowIndex) => {
+            const basisVariable =
+              rowIndex === 0
+                ? "Z"
+                : getBasisVariable(
+                    tableau,
+                    rowIndex,
+                    numOriginalVariables,
+                    numSlackVariables
+                  ) || "";
+            return (
+              <TableRow
+                key={`row${rowIndex as number}`}
+                className={
+                  pivotIndices?.pivotRowIndex === rowIndex ? "bg-accent" : ""
                 }
-                return (
-                  <TableCell
-                    key={`cell${rowIndex}-${colIndex as number}`}
-                    className={cellStyle}
-                  >
-                    {cell.toFixed(2)}
-                  </TableCell>
-                );
-              })}
-            </TableRow>
-          ))}
+              >
+                <TableCell className="border px-4 py-2">
+                  {basisVariable}
+                </TableCell>
+                {row.map((cell, colIndex) => {
+                  let cellStyle = "border px-4 py-2";
+                  if (pivotIndices) {
+                    if (pivotIndices.pivotColIndex === colIndex) {
+                      cellStyle += " bg-accent";
+                    }
+                    if (pivotIndices.pivotRowIndex === rowIndex) {
+                      cellStyle += " bg-accent";
+                    }
+                    if (
+                      pivotIndices.pivotRowIndex === rowIndex &&
+                      pivotIndices.pivotColIndex === colIndex
+                    ) {
+                      cellStyle += " font-bold";
+                    }
+                  }
+                  return (
+                    <TableCell
+                      key={`cell${rowIndex}-${colIndex as number}`}
+                      className={cellStyle}
+                    >
+                      {cell.toFixed(2)}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
