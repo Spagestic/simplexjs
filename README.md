@@ -1,8 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SimplexJS
+![alt text](image.png)
+A JavaScript library for solving linear programming problems using the Simplex method. You can try a live version of the solver [here](https://simplexsolver.vercel.app/).
 
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies:
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+# or
+bun install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -20,6 +34,24 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Usage
+
+To use SimplexJS, import the library and call its functions. Here's a simple example:
+
+```javascript
+import { solve } from "simplexjs";
+
+const result = solve({
+  objective: [1, 2],
+  constraints: [
+    { coefficients: [1, 1], constant: 4 },
+    { coefficients: [2, 1], constant: 5 },
+  ],
+});
+
+console.log(result);
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
@@ -28,6 +60,16 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Contributing
+
+We welcome contributions to SimplexJS! If you'd like to contribute, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Make your changes and commit them with a clear message.
+4. Push your changes to your fork.
+5. Open a pull request to the main repository.
 
 ## Deploy on Vercel
 
