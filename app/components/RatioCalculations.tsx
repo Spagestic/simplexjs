@@ -55,7 +55,13 @@ export const RatioCalculations: React.FC<RatioCalculationsProps> = ({
                     if (coeff !== 0) {
                       return (
                         <React.Fragment key={i}>
-                          {coeff > 0 && i > 0 ? " + " : ""}
+                          {coeff > 0 &&
+                          i > 0 &&
+                          row.slice(0, i).every((c) => c === 0)
+                            ? ""
+                            : coeff > 0 && i > 0
+                            ? " + "
+                            : ""}
                           {coeff !== 1 && coeff !== -1
                             ? formatValue(coeff)
                             : coeff === -1
