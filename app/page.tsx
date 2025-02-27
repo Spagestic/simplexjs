@@ -17,10 +17,11 @@ export default function Component() {
   const [problemType, setProblemType] = useState<"maximize" | "minimize">(
     "maximize"
   );
-  const [objective, setObjective] = useState<string[]>(["3", "4"]);
+  const [objective, setObjective] = useState<string[]>(["3", "2"]);
   const [constraints, setConstraints] = useState<Constraint[]>([
-    { x: ["2", "1"], operator: "<=", value: "8" },
-    { x: ["1", "3"], operator: "<=", value: "10" },
+    { x: ["1", "1"], operator: "<=", value: "3" },
+    { x: ["2", "1"], operator: "<=", value: "4" },
+    { x: ["4", "3"], operator: "<=", value: "12" },
   ]);
   const [signConstraints, setSignConstraints] = useState<string[]>(
     Array(objective.length).fill(">=")
@@ -190,7 +191,6 @@ export default function Component() {
             }}
             // signConstraints={signConstraints}
           />
-
         </div>
       </div>
       {/* Conditionally render DesmosGraph if there are 2 or fewer variables */}
