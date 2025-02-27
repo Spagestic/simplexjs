@@ -34,23 +34,6 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Usage
-
-To use SimplexJS, import the library and call its functions. Here's a simple example:
-
-```javascript
-import { solve } from "simplexjs";
-
-const result = solve({
-  objective: [1, 2],
-  constraints: [
-    { coefficients: [1, 1], constant: 4 },
-    { coefficients: [2, 1], constant: 5 },
-  ],
-});
-
-console.log(result);
-```
 
 ## Learn More
 
